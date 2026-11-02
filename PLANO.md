@@ -19,7 +19,7 @@ Criar o Molt como uma biblioteca nativa em Rust para Horizon que reproduza as pr
 | Parte | Escopo | Critério de conclusão |
 |---|---|---|
 | 0. Escopo e proveniência | Fixar snapshot do GeckoLib 5.5.7; mapear módulos compartilhados e licença; levantar APIs Horizon relevantes. | Revisão verificável registrada, mapa de módulos/fontes e lacunas iniciais registrados em `PROGRESSO.md`. |
-| 1. Base do Molt e integração Horizon | Estrutura da crate Rust, configuração/build, ciclo de vida do mod e adaptadores às APIs de renderização do Horizon. | Molt carrega no Horizon e possui um exemplo mínimo executável. |
+| 1. Base do Molt e integração Horizon | Adaptar o template oficial de native mixin bundle (não apenas um mod de conteúdo `.hmod`), fixar Horizon/horizon-mixins, estruturar a crate Rust e integrar os hooks de renderização. Validar em Linux/WSL: o template atual exige Linux e Rust 1.95. | Molt carrega em um executável Horizon gerado e possui um exemplo mínimo executável, com revisões/API registradas. |
 | 2. Geometria e recursos | Ler JSON de geometria estilo Bedrock: ossos, hierarquia, pivôs, cubos, UVs e locators; validar e armazenar modelos; recarga/cache de recursos. | Um modelo multi-osso é carregado e desenhado com transformações corretas. |
 | 3. Animação | Ler definições de animação e avaliar keyframes de posição, rotação e escala; loops, interpolação/easing e transições. | Animação em loop reproduz keyframes em tempo de jogo. |
 | 4. Runtime e controllers | Estado por objeto animável, cache/instâncias, controladores, prioridades, condições, disparos e animações concorrentes. | Controllers podem selecionar e controlar animações sem compartilhar estado indevido. |
