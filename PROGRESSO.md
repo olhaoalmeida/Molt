@@ -1,9 +1,9 @@
 # Progresso do Molt
 
-**Estado:** scaffold mínimo da Parte 1 implementado; build e carregamento em Horizon ainda não verificados.
+**Estado:** Parte 1 construída e verificada (stage, check, test, build) com Rust 1.97; falta só a confirmação manual em jogo.
 **Alvo:** GeckoLib **5.5.7**, Minecraft **26.3**.
 **Snapshot fonte:** `7c96bef7e1658e4158453c17eb464f0fb7f92426`.
-**Parte atual:** Parte 1 — validação do scaffold nativo; depois seguir para geometria e recursos.
+**Parte atual:** Parte 1 — confirmação manual em jogo; depois atualizar o pin do Horizon e seguir para geometria e recursos.
 
 ## Parte 0 — escopo e proveniência
 
@@ -60,11 +60,56 @@ Este é um mapa de escopo, não uma equivalência completa de cada classe. A mat
 - `README.md`: instruções de build e clones/checkouts pinados.
 - `THIRD_PARTY_NOTICES.md`: atribuição MIT do template.
 
+### Validação (2026-11-02)
+
+Ambiente: Linux x86_64 (sandbox), Python 3.13, **Rust 1.97.0 (stable)**. O `rust-toolchain.toml` pede 1.95.0, mas
+o servidor de distribuição do Rust estava inacessível neste ambiente, então tudo abaixo foi rodado com
+`RUSTUP_TOOLCHAIN=stable` (1.97.0). **Não foi validado com 1.95.0.** Pins usados, sem alteração:
+Horizon `ba6344a`, horizon-mixins `d9c83d7`, schema 6.
+
+| Verificação | Resultado |
+|---|---|
+| `python3 tools/horizon.py stage` | passou; o hook (`crate::game::molt::before_break`) e o módulo `molt` aparecem no `game.rs` gerado |
+| `python3 tools/horizon.py check` | passou (cerca de 3 min) |
+| `python3 tools/horizon.py test` | passou: `game::molt::tests::message_preserves_signed_block_coordinates` roda dentro do binário de teste do Horizon (cerca de 5 min) |
+| `python3 tools/horizon.py build` | passou (cerca de 16 min); gerou `target/horizon-cargo/fast/horizon-client` (70 MB) com a mensagem `[molt] Native hook reached at` embutida (confirmado por `strings`) |
+| `cargo fmt --all --check` | passou (a formatação de `runtime.rs` estava errada e foi corrigida) |
+| `cargo clippy --workspace --all-targets --locked --offline -- -D warnings` | passou |
+| `cargo test --workspace --locked --offline` | passou: 1 teste |
+| `python3 tools/test_template.py` | passou: o bundle compila no fixture pequeno, o corpo original do método e o resultado são preservados, revisão incompatível e alvo ausente são rejeitados |
+| `python3 tools/test_stage.py` | passou: estágio determinístico, checkout original intacto, auditoria de AST |
+
+### O que estava faltando e foi corrigido
+
+- `README.md` mandava rodar `check`/`build` sem baixar as dependências do Horizon, mas o script usa `--offline`, então
+  falhava com "attempting to make an HTTP request, but --offline was specified". Foi adicionada a ação
+  `python3 tools/horizon.py fetch` e o passo no README.
+- Não havia teste unitário no `runtime.rs` (o template oficial tem). Adicionado, e com ele a ação `test`.
+- Faltavam o CI (`.github/workflows/ci.yml`), os testes de fixture (`tools/test_template.py`, `tools/test_stage.py`) e a
+  auditoria de AST (`tools/audit`), todos do template oficial; foram adicionados, adaptados ao nome Molt, e o
+  `Cargo.toml` ganhou o workspace `tools/audit`.
+- `runtime.rs` não passava em `cargo fmt --check`.
+
 ### Critério e pendência
 
-A base de código e o fluxo para produzir o executável estão preparados. Ainda não posso marcar a Parte 1 como concluída, pois o critério inclui confirmar o carregamento real em Horizon e isso não foi verificado. O smoke hook também é somente uma prova de integração nativa; **não desenha modelos nem animações GeckoLib**.
+O critério da Parte 1 pede que o Molt carregue em um executável Horizon gerado e tenha um exemplo mínimo executável.
+**Verificado:** o Molt compila no Horizon fixado, o executável é gerado e contém o hook, e o teste do runtime passa
+dentro do jogo. **Não verificado:** executar o jogo e ver a linha `[molt]` ao quebrar um bloco. O sandbox não tem
+tela, GPU nem os dados do Minecraft, então isso é um teste manual:
 
-Para validar em Linux/WSL depois de instalar Python 3.12+ e Rust 1.95.0, seguir os comandos de build no [README.md](README.md). Confirmar que `stage`, `check` e `build` passam e que quebrar um bloco imprime `[molt]` no stderr; então registrar aqui resultado e ambiente, sem copiar logs gerados para o repositório.
+1. Em Linux/WSL, rodar `python3 tools/horizon.py build --horizon ../horizon` (ou usar o executável gerado).
+2. Iniciar o jogo com os recursos preparados, em uma pasta de dados temporária (`HORIZON_HOME`, ver o `CLAUDE.md` do
+   Horizon), abrir um mundo e quebrar um bloco.
+3. Confirmar que `[molt] Native hook reached at x, y, z` aparece no stderr. Registrar aqui o resultado.
+
+Até esse passo, a Parte 1 fica **concluída exceto pela confirmação manual em jogo**.
+
+### Observações
+
+- O Horizon fixado (`ba6344a`) é de 2026-11-01; o Horizon atual (`897fbb4` em 2026-11-02) tem a API de hooks em 153 e
+  reorganizou os hooks em "fragmentos". Atualizar o pin é uma tarefa à parte (Parte 2 precisa dos hooks de
+  renderização, e o próprio `native_draw_model` é API 151), e não foi tentada.
+- O pin é o mesmo do template oficial, validado por ele em 2026-10-30.
 
 ## Próxima etapa após validação
 
@@ -74,3 +119,4 @@ Começar a matriz de hooks de renderização no Horizon pinado e escolher o prim
 
 - 2026-11-02: planejamento e auditoria da Parte 0; snapshot 5.5.7, módulos, licença e APIs iniciais registrados.
 - 2026-11-02: scaffold mínimo da Parte 1 adicionado ao Molt; build/carregamento ainda não verificados neste ambiente.
+- 2026-11-02: Parte 1 validada no sandbox (stage, check, test, build, fixture); corrigidos fetch offline, teste unitário, CI e formatação. Pendente: execução em jogo.

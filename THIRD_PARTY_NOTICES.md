@@ -2,7 +2,7 @@
 
 ## Horizon native mod template
 
-The initial native bundle layout, mixin example, and staging workflow were adapted from
+The initial native bundle layout, mixin example, staging workflow, source audit (`tools/audit`), fixture tests (`tools/test_template.py`, `tools/test_stage.py`) and CI workflow were adapted from
 [horizon-rust/horizon-native-mod-template](https://github.com/horizon-rust/horizon-native-mod-template),
 snapshot [`cc8ce2d896782099abfa9f0abf26fa80c9e4bddb`](https://github.com/horizon-rust/horizon-native-mod-template/commit/cc8ce2d896782099abfa9f0abf26fa80c9e4bddb).
 

@@ -102,7 +102,7 @@ def lock(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["stage", "check", "build"])
+    parser.add_argument("action", choices=["stage", "fetch", "check", "build", "test"])
     parser.add_argument("--horizon", type=Path, default=ROOT.parent / "horizon")
     parser.add_argument("--target-dir", type=Path, default=ROOT / "target/horizon-cargo")
     args = parser.parse_args()
@@ -117,11 +117,17 @@ def main():
             parser.error("Cargo target and generated source stage must be separate")
         report = {"stage": str(output), "stage_changed": changed,
                   "horizon_revision": PIN, "staging_seconds": time.monotonic()-started}
-        if args.action != "stage":
+        if args.action == "fetch":
+            # check and build run --offline: download Horizon's locked dependencies once, with network.
+            subprocess.run(["cargo", "fetch", "--locked"], cwd=output, check=True, stdout=sys.stderr)
+            report["fetched"] = True
+        elif args.action != "stage":
             command = ["cargo", args.action, "--locked", "--offline", "-p", "horizon-client",
                        "--bin", "horizon-client", "--no-default-features", "--target-dir", str(target)]
             if args.action == "build":
                 command.extend(["--profile", "fast"])
+            if args.action == "test":
+                command.extend(["game::molt::tests", "--", "--nocapture"])
             with lock(target.parent / (target.name + ".molt-native.lock")):
                 run_start = time.monotonic()
                 result = subprocess.run(command, cwd=output, capture_output=True, text=True)

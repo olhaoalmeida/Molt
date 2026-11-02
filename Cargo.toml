@@ -9,3 +9,7 @@ description = "Native GeckoLib-inspired animation library for Horizon"
 [lib]
 # horizon-mixins injects this same file as the game::molt module.
 path = "mixins/molt/runtime.rs"
+
+[workspace]
+members = ["tools/audit"]
+resolver = "2"
