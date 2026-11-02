@@ -6,18 +6,19 @@ Criar o Molt como uma biblioteca nativa em Rust para Horizon que reproduza as pr
 
 ## Alvo e decisões
 
-- GeckoLib: **5.5.7**, conforme definido pelo projeto.
-- Minecraft: **26.3**.
-- Plataforma: **Horizon**, com APIs e versão exata a fixar durante a auditoria técnica.
+- GeckoLib: **5.5.7**, para Minecraft **26.3**.
+- Snapshot de código-fonte identificado: [`7c96bef7e1658e4158453c17eb464f0fb7f92426`](https://github.com/bernie-g/geckolib/commit/7c96bef7e1658e4158453c17eb464f0fb7f92426). O commit contém o changelog 5.5.7 e o catálogo Gradle declara GeckoLib 5.5.7/Minecraft 26.3.
+- Não foi encontrada tag ou GitHub Release chamada exatamente `5.5.7`; portanto, o hash acima é o snapshot verificável adotado, não uma tag oficial com esse nome. Verificar novamente antes de atualizar a referência.
+- Horizon: auditoria inicial usa a documentação em [`d146c591589aae395cbc6aadd65c2a4b96005655`](https://github.com/horizon-rust/horizon/tree/d146c591589aae395cbc6aadd65c2a4b96005655). A revisão que o Molt realmente compilará deve ser escolhida e fixada quando a Parte 1 começar.
 - Linguagem: Rust.
 - Licença do Molt: manter a licença do repositório; qualquer código derivado do GeckoLib deve preservar os avisos e cumprir a licença MIT upstream.
-- Não trocar silenciosamente o alvo por `main` ou outra versão do GeckoLib. Primeiro localizar e registrar o commit/tag ou artefato exato correspondente a 5.5.7.
+- Não trocar silenciosamente o alvo por `main` ou outra versão do GeckoLib.
 
 ## Partes do trabalho
 
 | Parte | Escopo | Critério de conclusão |
 |---|---|---|
-| 0. Escopo e proveniência | Fixar revisão exata do GeckoLib 5.5.7; mapear módulos compartilhados e licença. | Revisão verificável registrada e matriz de módulos/fontes pronta. |
+| 0. Escopo e proveniência | Fixar snapshot do GeckoLib 5.5.7; mapear módulos compartilhados e licença; levantar APIs Horizon relevantes. | Revisão verificável registrada, mapa de módulos/fontes e lacunas iniciais registrados em `PROGRESSO.md`. |
 | 1. Base do Molt e integração Horizon | Estrutura da crate Rust, configuração/build, ciclo de vida do mod e adaptadores às APIs de renderização do Horizon. | Molt carrega no Horizon e possui um exemplo mínimo executável. |
 | 2. Geometria e recursos | Ler JSON de geometria estilo Bedrock: ossos, hierarquia, pivôs, cubos, UVs e locators; validar e armazenar modelos; recarga/cache de recursos. | Um modelo multi-osso é carregado e desenhado com transformações corretas. |
 | 3. Animação | Ler definições de animação e avaliar keyframes de posição, rotação e escala; loops, interpolação/easing e transições. | Animação em loop reproduz keyframes em tempo de jogo. |
