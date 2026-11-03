@@ -111,6 +111,24 @@ Até esse passo, a Parte 1 fica **concluída exceto pela confirmação manual em
   renderização, e o próprio `native_draw_model` é API 151), e não foi tentada.
 - O pin é o mesmo do template oficial, validado por ele em 2026-10-30.
 
+### Teste no Windows (pendente de você)
+
+Não foi possível testar no Windows aqui. O caminho é o mesmo de qualquer mod nativo: o launcher do Horizon
+compila o mod na sua própria máquina, com o toolchain dele (Rust 1.99.1 e MinGW para `windows-gnu`).
+
+1. Gerar o arquivo: `python3 tools/package.py` (em Linux/WSL) produz `target/molt-0.1.0.hnmod`. O arquivo também
+   foi enviado como anexo. Seu SHA-256 está no próprio resultado do comando.
+2. No launcher, com o jogo 26.3 instalado: ligar **Native mods (experimental)** na instância.
+3. No PowerShell, rodar `horizon-launcher native-build C:\caminho\molt-0.1.0.hnmod --trust-native-code`.
+   Ele mostra o aviso "native mods run with full access to this computer" e só compila com essa flag.
+4. Abrir o jogo **a partir do PowerShell**, para ver o stderr. O hook escreve com `eprintln!`, então a linha
+   `[molt]` não aparece numa janela aberta pelo ícone.
+5. Criar ou abrir um mundo, quebrar um bloco e procurar `[molt] Native hook reached at x, y, z`.
+
+Riscos que ainda não foram verificados: o pin `68ff469` pode não existir no launcher que você tem (nesse caso
+o build falha dizendo qual commit falta); e a linha `[molt]` pode não aparecer se o jogo for iniciado pelo
+launcher e não pelo terminal. Se algo falhar, o log do build fica em `native/build.log`, conforme o launcher.
+
 ## Próxima etapa após validação
 
 Começar a matriz de hooks de renderização no Horizon pinado e escolher o primeiro alvo visual (entidade ou block entity), antes de implementar o parser de geometria GeckoLib.
