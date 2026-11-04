@@ -122,8 +122,12 @@ def main():
             subprocess.run(["cargo", "fetch", "--locked"], cwd=output, check=True, stdout=sys.stderr)
             report["fetched"] = True
         elif args.action != "stage":
+            # Gameplay (`game`, where the injected `game::molt` lives) is in horizon-client's library since
+            # f40d4df (main.rs only calls entry::main), so its unit tests run with --lib. A `--bin` test
+            # selects 0 tests and still exits 0: never read that as a pass.
+            unit = ["--lib"] if args.action == "test" else ["--bin", "horizon-client"]
             command = ["cargo", args.action, "--locked", "--offline", "-p", "horizon-client",
-                       "--bin", "horizon-client", "--no-default-features", "--target-dir", str(target)]
+                       *unit, "--no-default-features", "--target-dir", str(target)]
             if args.action == "build":
                 command.extend(["--profile", "fast"])
             if args.action == "test":

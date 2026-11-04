@@ -5,6 +5,14 @@
 **Snapshot fonte:** `7c96bef7e1658e4158453c17eb464f0fb7f92426`.
 **Parte atual:** Parte 1 — confirmação manual em jogo; depois atualizar o pin do Horizon e seguir para geometria e recursos.
 
+## 2026-11-04: pino atualizado para o Horizon `f40d4df` (branch `atualizar-pin-f40d4df`)
+- Pinos: Horizon `f40d4df781963ed0a6e1e0fd41bf740f652e2e46` (API 359), horizon-mixins `ddd9700` (sem mudança); sha256 de `crates/horizon-client/src/game.rs` = `eef44118...28c0` (`compatibility.json`).
+- Validado aqui (Rust `stable` 1.97): `stage`, `check`, `build --profile fast` (776 s) passam; o binário contém `[molt] Native hook reached`. O alvo `break_block(&mut self, pos: [i32; 3])` continua igual.
+- Mudou o layout do Horizon: o jogo (`game`) agora está na biblioteca `horizon-client` e `main.rs` só chama `entry::main`. `tools/horizon.py test` passou a usar `--lib`; com `--bin` ele rodava **0 testes e saía com código 0**, o que parecia aprovação e não era. Agora: 1 teste (`game::molt::tests::message_preserves_signed_block_coordinates`) passa.
+- Para rodar `stage` a ferramenta espera `../horizon-mixins` (link para `/home/claude/deps/horizon-mixins` nesta sessão) e `--horizon <checkout>`.
+- Disco: a sessão tem ~16 GB livres; `target/horizon-cargo/debug` chega a 13 GB. Apague `debug/` se der "No space left on device" (se regenera).
+- NÃO testado: o jogo no Windows do dono com este pino (o `.hnmod` entregue antes usa `68ff469`; precisa ser refeito com `tools/package.py`).
+
 ## Parte 0 — escopo e proveniência
 
 ### Referências fixadas
